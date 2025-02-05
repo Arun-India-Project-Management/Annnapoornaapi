@@ -1,0 +1,16 @@
+name: Auto-Assign Arun for DB Changes
+
+on:
+  pull_request:
+    paths:
+      - '**'
+
+jobs:
+  assign-reviewer:
+    runs-on: [self-hosted]
+    steps:
+      - name: Assign Arun as reviewer
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          reviewers: arunsahu92
