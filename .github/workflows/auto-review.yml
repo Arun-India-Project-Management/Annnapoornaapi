@@ -9,8 +9,14 @@ jobs:
   assign-reviewer:
     runs-on: [self-hosted]
     steps:
-      - name: Assign Arun as reviewer
-        uses: hmarr/auto-approve-action@v3
+      - name: Assign Arun as Reviewer
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          reviewers: arunsahu92
+          github-token: ${{ secrets.GH_PAT }}
+          script: |
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: ['arunsahu92']
+            });
