@@ -1,21 +1,30 @@
-name: Auto-Assign Arun for DB Changes
+name: Auto-Assign Reviewers for Specific Folder Changes
 
 on:
   pull_request:
-    paths:
-      - 'Annapurnaworld.api/Annapurnaworld.data/**'
+    types: [opened, synchronize, reopened]
 
 jobs:
-  assign-reviewer:
-    runs-on: [self-hosted]
+  assign-reviewers:
+    runs-on: ubuntu-latest
     steps:
-      - name: Assign Arun as  Reviewer 
+      - name: Fetch Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            database/**
+            migrations/**
+            schemas/**
+
+      - name: Assign Reviewers Based on Changed Paths
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GH_PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const reviewers = [];
-            const changedFiles = context.payload.pull_request.changed_files || [];
+            const changedFiles = [${{ steps.changed-files.outputs.all_changed_files }}];
+            const reviewers = new Set();
 
             // Define reviewer mapping based on folder paths
             const reviewerMapping = {
@@ -24,21 +33,20 @@ jobs:
               "schemas/": ["JohnUsername"]
             };
 
-            // Check changed files and assign reviewers
-            for (const path in reviewerMapping) {
-              if (changedFiles.some(file => file.startsWith(path))) {
-                reviewers.push(...reviewerMapping[path]);
+            // Assign reviewers based on changed files
+            changedFiles.forEach(file => {
+              for (const [path, reviewerList] of Object.entries(reviewerMapping)) {
+                if (file.startsWith(path)) {
+                  reviewerList.forEach(reviewer => reviewers.add(reviewer));
+                }
               }
-            }
+            });
 
-            // Remove duplicate reviewers
-            const uniqueReviewers = [...new Set(reviewers)];
-
-            if (uniqueReviewers.length > 0) {
+            if (reviewers.size > 0) {
               github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.payload.pull_request.number,
-                reviewers: uniqueReviewers
+                reviewers: Array.from(reviewers)
               });
             }
