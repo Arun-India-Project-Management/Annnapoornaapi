@@ -3,7 +3,7 @@ name: Auto-Assign Arun for DB Changes
 on:
   pull_request:
     paths:
-      - 'Annnapoornaapi/Annapurnaworld.api/Annapurnaworld.data/**'
+      - 'Annapurnaworld.api/Annapurnaworld.data/**'
 
 jobs:
   assign-reviewer:
