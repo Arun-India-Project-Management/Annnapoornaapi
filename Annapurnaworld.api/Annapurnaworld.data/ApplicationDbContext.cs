@@ -29,7 +29,7 @@ namespace Annapurnaworld.data
         {
             modelBuilder.Entity<OrderShipmentMetaData>().HasKey(x => x.KeyId);
             modelBuilder.Entity<OrderShippmentStatus>().HasKey(x => x.Id);
-            modelBuilder.Entity<DeliveryHub>().HasKey(x => x.Id);
+            modelBuilder.Entity<DeliveryHub>().HasKey(x => x.Id); 
 
             modelBuilder.Entity<User>().HasKey(x => x.Id);
             modelBuilder.Entity<User>().Property(x => x.Id).ValueGeneratedNever();
