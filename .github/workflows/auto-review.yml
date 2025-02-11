@@ -21,7 +21,7 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.TK }}
           script: |
             const changedFiles = [${{ steps.changed-files.outputs.all_changed_files }}];
             const reviewers = new Set();
