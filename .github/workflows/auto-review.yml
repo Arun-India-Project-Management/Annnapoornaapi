@@ -1,52 +1,22 @@
-name: Auto-Assign Reviewers for Specific Folder Changes
+name: Auto-Assign Arun for DB Changes
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    paths:
+      - 'Annapurnaworld.api/Annapurnaworld.data/**'
 
 jobs:
-  assign-reviewers:
-    runs-on: ubuntu-latest
+  assign-reviewer:
+    runs-on: [self-hosted]
     steps:
-      - name: Fetch Changed Files
-        id: changed-files
-        uses: tj-actions/changed-files@v42
-        with:
-          files: |
-            database/**
-            migrations/**
-            schemas/**
-
-      - name: Assign Reviewers Based on Changed Paths
-        if: steps.changed-files.outputs.any_changed == 'true'
+      - name: Assign Arun as  Reviewer 
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.TK }}
+          github-token: ${{ secrets.GH_PAT }}
           script: |
-            const changedFiles = [${{ steps.changed-files.outputs.all_changed_files }}];
-            const reviewers = new Set();
-
-            // Define reviewer mapping based on folder paths
-            const reviewerMapping = {
-              "Annapurnaworld.api/Annapurnaworld.data/": ["arunsahu92"],
-              "migrations/": ["SarahUsername"],
-              "schemas/": ["JohnUsername"]
-            };
-
-            // Assign reviewers based on changed files
-            changedFiles.forEach(file => {
-              for (const [path, reviewerList] of Object.entries(reviewerMapping)) {
-                if (file.startsWith(path)) {
-                  reviewerList.forEach(reviewer => reviewers.add(reviewer));
-                }
-              }
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: ['arunsahu92']
             });
-
-            if (reviewers.size > 0) {
-              github.rest.pulls.requestReviewers({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                reviewers: Array.from(reviewers)
-              });
-            }
