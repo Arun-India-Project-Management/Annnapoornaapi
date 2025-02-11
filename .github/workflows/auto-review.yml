@@ -14,9 +14,31 @@ jobs:
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |
-            github.rest.pulls.requestReviewers({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              reviewers: ['arunsahu92']
-            });
+            const reviewers = [];
+            const changedFiles = context.payload.pull_request.changed_files || [];
+
+            // Define reviewer mapping based on folder paths
+            const reviewerMapping = {
+              "Annapurnaworld.api/Annapurnaworld.data/": ["arunsahu92"],
+              "migrations/": ["SarahUsername"],
+              "schemas/": ["JohnUsername"]
+            };
+
+            // Check changed files and assign reviewers
+            for (const path in reviewerMapping) {
+              if (changedFiles.some(file => file.startsWith(path))) {
+                reviewers.push(...reviewerMapping[path]);
+              }
+            }
+
+            // Remove duplicate reviewers
+            const uniqueReviewers = [...new Set(reviewers)];
+
+            if (uniqueReviewers.length > 0) {
+              github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                reviewers: uniqueReviewers
+              });
+            }
