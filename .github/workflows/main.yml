@@ -1,0 +1,39 @@
+name: azure-deploy.yml
+
+on:
+  push:
+    branches:
+      - main  # Deploy on push to main
+  workflow_dispatch:  # Allow manual deployment
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # Change this based on your .NET version
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build the Project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run Unit Tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Publish the App
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: "YOUR_AZURE_WEBAPP_NAME"
+        publish-profile: ${{ secrets.Azure Web Credentials}}
+        package: ./publish
