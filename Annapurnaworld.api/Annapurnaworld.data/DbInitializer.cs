@@ -18,7 +18,7 @@ namespace Annapurnaworld.data
             // Check if the database has been seeded
             if (context.Users.Any())
             {
-                return; // DB has been seeded
+                return; //   DB has been seeded
             }
             //Add seed data
             var adminRoleId = Guid.NewGuid();
