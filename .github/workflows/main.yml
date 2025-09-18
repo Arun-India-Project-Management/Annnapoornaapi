@@ -5,6 +5,7 @@ on:
     branches:
       - main  # Deploy on push to main
   workflow_dispatch:  # Allow manual deployment
+  workflow_call: 
 
 jobs:
   build-and-deploy:
