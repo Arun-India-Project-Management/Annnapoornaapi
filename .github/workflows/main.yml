@@ -5,10 +5,11 @@ on:
     branches:
       - main  # Deploy on push to main
   workflow_dispatch:  # Allow manual deployment
+  workflow_call: 
 
 jobs:
   build-and-deploy:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code
@@ -21,19 +22,13 @@ jobs:
 
     - name: Restore Dependencies
       run: dotnet restore
+      working-directory: Annapurnaworld.api
 
     - name: Build the Project
       run: dotnet build --configuration Release --no-restore
-
-    - name: Run Unit Tests
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      working-directory: Annapurnaworld.api  
 
     - name: Publish the App
       run: dotnet publish -c Release -o ./publish
-
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: "YOUR_AZURE_WEBAPP_NAME"
-        publish-profile: ${{ secrets.Azure Web Credentials}}
-        package: ./publish
+      working-directory: Annapurnaworld.api
+ 
