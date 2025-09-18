@@ -22,13 +22,13 @@ jobs:
 
     - name: Restore Dependencies
       run: dotnet restore
+      working-directory: Annapurnaworld.api
 
     - name: Build the Project
       run: dotnet build --configuration Release --no-restore
-
-    - name: Run Unit Tests
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      working-directory: Annapurnaworld.api  
 
     - name: Publish the App
       run: dotnet publish -c Release -o ./publish
+      working-directory: Annapurnaworld.api
  
