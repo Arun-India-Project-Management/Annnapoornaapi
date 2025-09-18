@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code
@@ -30,10 +30,4 @@ jobs:
 
     - name: Publish the App
       run: dotnet publish -c Release -o ./publish
-
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: "YOUR_AZURE_WEBAPP_NAME"
-        publish-profile: ${{ secrets.Azure Web Credentials}}
-        package: ./publish
+ 
